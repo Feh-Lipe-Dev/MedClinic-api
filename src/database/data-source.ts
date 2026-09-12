@@ -2,6 +2,7 @@ import 'reflect-metadata'
 import dotenv from 'dotenv'
 import { DataSource } from 'typeorm'
 import { Usuario } from '../entities/Usuario'
+import { CriarTabelaUsuarios } from './migrations/CriarTabelaUsuarios'
 
 dotenv.config()
 
@@ -16,7 +17,8 @@ export const AppDataSource = new DataSource({
         process.env.DB_SSL === "true"
             ? { rejectUnauthorized: false }
             : false,
-    synchronize: true,
+    synchronize: false,
+    migrations: [CriarTabelaUsuarios],
     logging: false,
     entities: [Usuario]
 })
