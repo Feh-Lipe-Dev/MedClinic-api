@@ -158,7 +158,7 @@ Os usuários são criados por meio do `POST /auth/register`; o perfil padrão é
 
 Acesse o vídeo de apresentação para assistir a demonstração da API em funcionamento, incluindo cadastro, login e controle de acesso.
 
-- [Vídeo](youtube.com)
+- [Vídeo](https://www.youtube.com/watch?v=5oe9n6uNq1o)
 
 ## Autor
 
