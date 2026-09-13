@@ -9,6 +9,12 @@ import { validarDto } from '../utils/validarDto'
 
 type RegistrarUsuarioPayload = Record<string, unknown>
 
+export interface LoginResposta {
+    token: string
+    id: string
+    role: UsuarioRole
+}
+
 export class AuthService {
     async registrarUsuario(payload: RegistrarUsuarioPayload): Promise<Usuario> {
         const dto = await validarDto(RegistrarUsuarioDTO, payload)
@@ -31,7 +37,7 @@ export class AuthService {
         return usuarioRepository.save(usuario)
     }
 
-    async login(payload: RegistrarUsuarioPayload): Promise<string> {
+    async login(payload: RegistrarUsuarioPayload): Promise<LoginResposta> {
         const dto = await validarDto(LoginDTO, payload)
 
         const usuario = await usuarioRepository.findOneBy({ email: dto.email })
@@ -46,6 +52,10 @@ export class AuthService {
             throw new ApiError(401, 'Credenciais inválidas.')
         }
 
-        return gerarToken({ id: usuario.id, role: usuario.role })
+        return {
+            token: gerarToken({ id: usuario.id, role: usuario.role }),
+            id: usuario.id,
+            role: usuario.role,
+        }
     }
 }
