@@ -1,5 +1,3 @@
-import { plainToInstance } from 'class-transformer'
-import { validate } from 'class-validator'
 import { LoginDTO } from '../dtos/LoginDTO'
 import { RegistrarUsuarioDTO } from '../dtos/RegistrarUsuarioDTO'
 import { Usuario, UsuarioRole } from '../entities/Usuario'
@@ -7,20 +5,13 @@ import { ApiError } from '../middlewares/errorHandler'
 import { usuarioRepository } from '../repositories/UsuarioRepository'
 import { compararSenha, hashSenha } from '../utils/bcrypt'
 import { gerarToken } from '../utils/jwt'
+import { validarDto } from '../utils/validarDto'
 
 type RegistrarUsuarioPayload = Record<string, unknown>
 
 export class AuthService {
     async registrarUsuario(payload: RegistrarUsuarioPayload): Promise<Usuario> {
-        const dto = plainToInstance(RegistrarUsuarioDTO, payload)
-        const erros = await validate(dto)
-
-        if (erros.length > 0) {
-            const mensagens = erros.flatMap((erro) =>
-                Object.values(erro.constraints ?? {})
-            )
-            throw new ApiError(400, mensagens.join('; '))
-        }
+        const dto = await validarDto(RegistrarUsuarioDTO, payload)
 
         const emailExistente = await usuarioRepository.findOneBy({ email: dto.email })
 
@@ -40,16 +31,8 @@ export class AuthService {
         return usuarioRepository.save(usuario)
     }
 
-    async login(payload: LoginDTO): Promise<string> {
-        const dto = plainToInstance(LoginDTO, payload)
-        const erros = await validate(dto)
-
-        if (erros.length > 0) {
-            const mensagens = erros.flatMap((erro) =>
-                Object.values(erro.constraints ?? {})
-            )
-            throw new ApiError(400, mensagens.join('; '))
-        }
+    async login(payload: RegistrarUsuarioPayload): Promise<string> {
+        const dto = await validarDto(LoginDTO, payload)
 
         const usuario = await usuarioRepository.findOneBy({ email: dto.email })
 
